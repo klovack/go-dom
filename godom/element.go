@@ -2,7 +2,6 @@ package godom
 
 import (
 	"io"
-	"strings"
 
 	class "github.com/klovack/go-dom/godom/class"
 
@@ -18,19 +17,19 @@ type Element struct {
 	ClassList class.List
 	Children  []*Element
 
-	node           *html.Node
-	anchors        []*Element
-	baseURI        string
-	body           *Element
-	docType        DocTypeDeclaration
-	elementElement *Element
-	forms          []*Element
-	head           *Element
-	links          []*Element
-	images         []*Element
-	scripts        []*Element
-	title          *Element
-	url            string
+	node            *html.Node
+	anchors         []*Element
+	baseURI         string
+	body            *Element
+	docType         DocTypeDeclaration
+	documentElement *Element
+	forms           []*Element
+	head            *Element
+	links           []*Element
+	images          []*Element
+	scripts         []*Element
+	title           *Element
+	url             string
 }
 
 // ParseDocument parses the HTML and convert it to godom element
@@ -40,32 +39,18 @@ func ParseDocument(r io.Reader) *Element {
 		return &Element{}
 	}
 
-	newDoc := &Element{
-		node: doc,
-	}
-
+	newDoc := ParseElement(doc)
 	return newDoc
 }
 
-// ParseElement converts the node to godom element
+// ParseElement converts the html.node to godom element
 func ParseElement(n *html.Node) *Element {
+	children := fetchChildren(n)
+
 	return &Element{
-		node: n,
+		node:     n,
+		Children: children,
 	}
-}
-
-// CreateElement returns a single godom element
-func CreateElement(s string) *Element {
-	doc, err := html.Parse(strings.NewReader(s))
-	if err != nil {
-		return &Element{}
-	}
-
-	newEl := &Element{
-		node: doc,
-	}
-
-	return newEl
 }
 
 func (e *Element) Anchors() []*Element {
